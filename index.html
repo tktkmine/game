@@ -2,80 +2,125 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>30階層の魔王 Ver0.7</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>30階層の魔王 Ver0.8</title>
 
 <style>
 
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
-    padding:20px;
     background:#111;
     color:white;
     font-family:sans-serif;
-    text-align:center;
+    overflow:hidden;
+    height:100vh;
 }
 
 .container{
-    max-width:420px;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:10px;
+    max-width:480px;
     margin:auto;
 }
 
 .panel{
     background:#222;
     border-radius:12px;
-    padding:15px;
-    margin-bottom:15px;
+    padding:8px;
+    margin-bottom:8px;
+}
+
+h1{
+    margin:10px 0;
+    font-size:28px;
 }
 
 button{
     width:100%;
-    padding:15px;
-    margin-top:10px;
+    padding:14px;
     border:none;
     border-radius:10px;
     background:#444;
     color:white;
     font-size:18px;
+    margin-top:8px;
 }
 
 button:active{
     transform:scale(0.98);
 }
 
-.choice button{
-    background:#2e7d32;
+.menu-btn{
+    background:#6a1b9a;
 }
 
 .item-btn{
     background:#1565c0;
 }
 
-.menu-btn{
-    background:#6a1b9a;
+.choice button{
+    background:#2e7d32;
 }
 
-.enemy-name{
-    font-size:24px;
-    margin-bottom:10px;
+.topbar{
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
 }
 
-.log{
-    min-height:100px;
-    line-height:1.6;
+.battle-area{
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    flex:1;
+    min-height:180px;
 }
 
 .sprite svg{
     width:120px;
     height:120px;
-    image-rendering: pixelated;
+    image-rendering:pixelated;
 }
 
-#battleVisuals{
+.status-row{
     display:flex;
-    justify-content:space-around;
-    align-items:center;
-    margin-bottom:15px;
+    justify-content:space-between;
+    gap:8px;
+}
+
+.status-box{
+    flex:1;
+    background:#1b1b1b;
+    border-radius:10px;
+    padding:8px;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.enemy-name{
+    font-size:22px;
+    margin-bottom:5px;
+}
+
+.log{
+    height:80px;
+    overflow:hidden;
+    line-height:1.5;
+    font-size:15px;
+}
+
+.bottom-buttons{
+    margin-top:auto;
+}
+
+#itemArea button{
+    margin-top:6px;
 }
 
 </style>
@@ -100,22 +145,38 @@ button:active{
 
 </div>
 
-<!-- ゲーム画面 -->
-<div id="gameScreen" style="display:none;">
+<!-- ゲーム -->
+<div id="gameScreen" style="display:none; height:100%; display:flex; flex-direction:column;">
 
-<h1>30階層の魔王</h1>
+<div class="panel topbar">
+<div id="floor">1階層</div>
+</div>
 
-<div class="panel">
-<div id="floor"></div>
+<div class="panel battle-area">
+
+<div id="playerSprite"></div>
+
+<div id="enemySprite"></div>
+
 </div>
 
 <div class="panel">
 
-<h2>勇者</h2>
+<div class="enemy-name" id="enemyName"></div>
+
+<div id="enemyStats"></div>
+
+</div>
+
+<div class="status-row">
+
+<div class="status-box">
 
 <div id="playerStats"></div>
 
-<hr>
+</div>
+
+<div class="status-box">
 
 <div id="equipment"></div>
 
@@ -125,25 +186,13 @@ button:active{
 
 </div>
 
-<div class="panel">
-
-<div id="battleVisuals">
-
-<div id="playerSprite"></div>
-
-<div id="enemySprite"></div>
-
-</div>
-
-<div class="enemy-name" id="enemyName"></div>
-
-<div id="enemyStats"></div>
-
 </div>
 
 <div class="panel log" id="log">
 ダンジョンへ潜入した。
 </div>
+
+<div class="bottom-buttons">
 
 <button id="attackBtn" onclick="attack()">
 攻撃
@@ -154,8 +203,8 @@ button:active{
 </button>
 
 <div id="itemArea" style="display:none;">
-<button onclick="usePotion()">回復薬を使う</button>
-<button onclick="useBomb()">爆薬を使う</button>
+<button onclick="usePotion()">回復薬</button>
+<button onclick="useBomb()">爆薬</button>
 </div>
 
 <div id="choiceArea" class="choice" style="display:none;">
@@ -241,7 +290,7 @@ function startGame(){
     "none";
 
     document.getElementById("gameScreen").style.display =
-    "block";
+    "flex";
 
     document.getElementById("resultArea").style.display =
     "none";
@@ -311,22 +360,22 @@ function updateUI(){
 
     document.getElementById("playerStats").innerHTML =
     `
-    HP: ${player.hp} / ${player.maxHp}<br>
-    攻撃力: ${player.atk}<br>
-    防御力: ${player.def}<br>
-    クリ率: ${player.crit}%
+    HP ${player.hp}/${player.maxHp}<br>
+    ATK ${player.atk}<br>
+    DEF ${player.def}<br>
+    CRT ${player.crit}%
     `;
 
     document.getElementById("equipment").innerHTML =
     `
-    武器：${player.weapon.name}<br>
-    防具：${player.armor.name}
+    ⚔ ${player.weapon.name}<br>
+    🛡 ${player.armor.name}
     `;
 
     document.getElementById("inventory").innerHTML =
     `
-    回復薬 ×${inventory.potion}<br>
-    爆薬 ×${inventory.bomb}
+    🧪 ${inventory.potion}<br>
+    💣 ${inventory.bomb}
     `;
 
     document.getElementById("enemyName").innerText =
@@ -334,10 +383,8 @@ function updateUI(){
 
     document.getElementById("enemyStats").innerHTML =
     `
-    HP: ${enemy.hp} / ${enemy.maxHp}<br>
-    攻撃力: ${enemy.atk}<br>
-    防御力: ${enemy.def}<br>
-    クリ率: ${enemy.crit}%
+    HP ${enemy.hp}/${enemy.maxHp}<br>
+    ATK ${enemy.atk} DEF ${enemy.def}
     `;
 }
 
@@ -367,7 +414,7 @@ function attack(){
     enemy.hp -= damage;
 
     let log =
-    `勇者の攻撃！ ${damage}ダメージ！`;
+    `勇者の攻撃！ ${damage}ダメージ`;
 
     if(crit){
         log += "<br>クリティカル！";
@@ -388,10 +435,10 @@ function enemyTurn(log){
 
     player.hp -= damage;
 
-    log += `<br>${enemy.name}の攻撃！ ${damage}ダメージ！`;
+    log += `<br>${enemy.name}の攻撃 ${damage}ダメージ`;
 
     if(crit){
-        log += "<br>敵のクリティカル！";
+        log += "<br>敵クリティカル！";
     }
 
     if(player.hp <= 0){
@@ -404,7 +451,6 @@ function enemyTurn(log){
 
         document.getElementById("log").innerHTML =
         `
-        勇者は力尽きた...<br><br>
         GAME OVER
         `;
 
@@ -439,8 +485,7 @@ function afterPlayerAction(log){
 
             document.getElementById("log").innerHTML =
             `
-            魔王を倒した！<br><br>
-            ダンジョン制覇！
+            魔王討伐完了！
             `;
 
             document.getElementById("attackBtn").style.display =
@@ -456,7 +501,7 @@ function afterPlayerAction(log){
         }
 
         document.getElementById("log").innerHTML =
-        log + "<br><br>敵を倒した！";
+        log + "<br>敵を撃破";
 
         document.getElementById("attackBtn").style.display =
         "none";
@@ -491,7 +536,7 @@ function usePotion(){
     if(inventory.potion <= 0){
 
         document.getElementById("log").innerHTML =
-        "回復薬がない。";
+        "回復薬がない";
 
         return;
     }
@@ -506,7 +551,7 @@ function usePotion(){
 
     updateUI();
 
-    afterPlayerAction("回復薬を使用。HPが10回復した。");
+    afterPlayerAction("回復薬使用 HP+10");
 }
 
 function useBomb(){
@@ -516,7 +561,7 @@ function useBomb(){
     if(inventory.bomb <= 0){
 
         document.getElementById("log").innerHTML =
-        "爆薬がない。";
+        "爆薬がない";
 
         return;
     }
@@ -527,7 +572,7 @@ function useBomb(){
 
     updateUI();
 
-    afterPlayerAction("爆薬を使用。敵に10ダメージ！");
+    afterPlayerAction("爆薬使用 10ダメージ");
 }
 
 function showChoices(){
@@ -583,9 +628,9 @@ function growthEvent(){
     const area = document.getElementById("choiceArea");
 
     area.innerHTML = `
-    <button onclick="upgrade('atk')">攻撃力アップ (+2)</button>
-    <button onclick="upgrade('hp')">最大HPアップ (+10)</button>
-    <button onclick="upgrade('crit')">クリ率アップ (+10%)</button>
+    <button onclick="upgrade('atk')">攻撃+2</button>
+    <button onclick="upgrade('hp')">HP+10</button>
+    <button onclick="upgrade('crit')">CRT+10%</button>
     `;
 }
 
@@ -604,7 +649,7 @@ function upgrade(type){
         player.crit += 10;
     }
 
-    nextFloor("能力が強化された。");
+    nextFloor("能力強化");
 }
 
 function restEvent(){
@@ -617,7 +662,7 @@ function restEvent(){
         player.hp = player.maxHp;
     }
 
-    nextFloor(`休息した。HPが${heal}回復した。`);
+    nextFloor(`休息 HP+${heal}`);
 }
 
 function gatherEvent(){
@@ -630,13 +675,13 @@ function gatherEvent(){
 
         inventory.potion++;
 
-        text = "回復薬を発見した。";
+        text = "回復薬発見";
     }
     else if(rand < 0.6){
 
         inventory.bomb++;
 
-        text = "爆薬を発見した。";
+        text = "爆薬発見";
     }
     else{
 
@@ -671,12 +716,12 @@ function gatherEvent(){
                     player.weapon = selected;
 
                     text =
-                    `${selected.name}を装備した！`;
+                    `${selected.name}装備`;
                 }
                 else{
 
                     text =
-                    `${selected.name}を見つけたが使わなかった。`;
+                    `${selected.name}発見`;
                 }
             }
             else{
@@ -689,12 +734,12 @@ function gatherEvent(){
                     player.armor = selected;
 
                     text =
-                    `${selected.name}を装備した！`;
+                    `${selected.name}装備`;
                 }
                 else{
 
                     text =
-                    `${selected.name}を見つけたが使わなかった。`;
+                    `${selected.name}発見`;
                 }
             }
         }
@@ -727,7 +772,7 @@ function timeEvent(){
     createEnemy();
 
     document.getElementById("log").innerHTML =
-    "時が巻き戻る...HPが全回復した。";
+    "時が巻き戻る";
 
     updateUI();
 }
@@ -750,7 +795,7 @@ function nextFloor(message){
     createEnemy();
 
     document.getElementById("log").innerHTML =
-    message + "<br><br>次の敵が現れた。";
+    message;
 
     updateUI();
 }
@@ -762,18 +807,21 @@ function drawSprites(){
     <div class="sprite">
     <svg viewBox="0 0 64 64">
 
-    <rect x="20" y="28" width="24" height="28" fill="#2244aa"/>
+    <rect x="24" y="4" width="16" height="8" fill="#663300"/>
 
-    <rect x="24" y="12" width="16" height="16" fill="#ffcc99"/>
+    <rect x="20" y="12" width="24" height="20" fill="#ffcc99"/>
 
-    <rect x="28" y="18" width="2" height="2" fill="#000"/>
-    <rect x="34" y="18" width="2" height="2" fill="#000"/>
+    <rect x="26" y="20" width="4" height="4" fill="#000"/>
+    <rect x="34" y="20" width="4" height="4" fill="#000"/>
 
-    <rect x="22" y="8" width="20" height="6" fill="#663300"/>
+    <rect x="18" y="32" width="28" height="24" fill="#2244aa"/>
 
-    <rect x="46" y="24" width="4" height="20" fill="#cccccc"/>
+    <rect x="12" y="34" width="6" height="18" fill="#996633"/>
 
-    <rect x="14" y="28" width="6" height="12" fill="#996633"/>
+    <rect x="48" y="28" width="4" height="24" fill="#cccccc"/>
+
+    <rect x="22" y="56" width="6" height="8" fill="#888"/>
+    <rect x="36" y="56" width="6" height="8" fill="#888"/>
 
     </svg>
     </div>
@@ -806,15 +854,15 @@ function drawSprites(){
     <div class="sprite">
     <svg viewBox="0 0 64 64">
 
-    <rect x="20" y="10" width="24" height="20" fill="${color}"/>
+    <rect x="18" y="10" width="28" height="18" fill="${color}"/>
 
-    <rect x="26" y="18" width="3" height="3" fill="#fff"/>
-    <rect x="35" y="18" width="3" height="3" fill="#fff"/>
+    <rect x="24" y="18" width="4" height="4" fill="#fff"/>
+    <rect x="36" y="18" width="4" height="4" fill="#fff"/>
 
-    <rect x="18" y="30" width="28" height="20" fill="${color}"/>
+    <rect x="16" y="30" width="32" height="22" fill="${color}"/>
 
-    <rect x="20" y="50" width="6" height="10" fill="${color}"/>
-    <rect x="38" y="50" width="6" height="10" fill="${color}"/>
+    <rect x="20" y="52" width="6" height="10" fill="${color}"/>
+    <rect x="38" y="52" width="6" height="10" fill="${color}"/>
 
     </svg>
     </div>

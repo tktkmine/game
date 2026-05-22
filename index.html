@@ -1,127 +1,278 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>じゃんけん勝負</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>30階層の魔王</title>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background: #1e1e1e;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<style>
+body {
+    margin: 0;
+    padding: 20px;
+    background: #111;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+}
 
-    .container {
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-    }
+.container {
+    max-width: 400px;
+    margin: auto;
+}
 
-    h1 {
-      margin-bottom: 30px;
-      font-size: 2rem;
-    }
+h1 {
+    margin-bottom: 10px;
+}
 
-    .buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 30px;
-    }
+.panel {
+    background: #222;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
 
-    button {
-      flex: 1;
-      padding: 20px 10px;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 15px;
-      background: #333;
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #444;
+    color: white;
+}
 
-    button:active {
-      transform: scale(0.95);
-    }
+button:active {
+    transform: scale(0.98);
+}
 
-    .result {
-      font-size: 1.3rem;
-      line-height: 1.8;
-      min-height: 120px;
-    }
+.upgrade-buttons button {
+    background: #2e7d32;
+}
 
-    .restart {
-      margin-top: 20px;
-      display: none;
-      background: #4caf50;
-    }
-  </style>
+.enemy-name {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.log {
+    min-height: 80px;
+    line-height: 1.6;
+}
+</style>
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>じゃんけん勝負</h1>
+<div class="container">
 
-    <div class="buttons">
-      <button onclick="play('グー')">✊ グー</button>
-      <button onclick="play('チョキ')">✌️ チョキ</button>
-      <button onclick="play('パー')">✋ パー</button>
+    <h1>30階層の魔王</h1>
+
+    <div class="panel">
+        <div id="floor">1階層</div>
     </div>
 
-    <div class="result" id="result">
-      手を選べ。
+    <div class="panel">
+        <h2>勇者</h2>
+        <div id="playerStats"></div>
     </div>
 
-    <button class="restart" id="restartBtn" onclick="restartGame()">
-      もう一回
+    <div class="panel">
+        <div class="enemy-name" id="enemyName"></div>
+        <div id="enemyStats"></div>
+    </div>
+
+    <div class="panel log" id="log">
+        ダンジョンへ潜入した。
+    </div>
+
+    <button id="attackBtn" onclick="attack()">
+        攻撃
     </button>
-  </div>
 
-  <script>
-    const hands = ['グー', 'チョキ', 'パー'];
+    <div class="upgrade-buttons" id="upgradeArea" style="display:none;">
+        <button onclick="upgrade('atk')">攻撃力アップ (+2)</button>
+        <button onclick="upgrade('hp')">最大HPアップ (+10)</button>
+        <button onclick="upgrade('crit')">クリ率アップ (+10%)</button>
+    </div>
 
-    function play(playerHand) {
-      const cpuHand = hands[Math.floor(Math.random() * 3)];
+</div>
 
-      let result = '';
+<script>
 
-      if (playerHand === cpuHand) {
-        result = '引き分け';
-      } else if (
-        (playerHand === 'グー' && cpuHand === 'チョキ') ||
-        (playerHand === 'チョキ' && cpuHand === 'パー') ||
-        (playerHand === 'パー' && cpuHand === 'グー')
-      ) {
-        result = '勝利';
-      } else {
-        result = '敗北';
-      }
+let floor = 1;
 
-      document.getElementById('result').innerHTML = `
-        あなた：${playerHand}<br>
-        相手：${cpuHand}<br><br>
-        <strong>${result}</strong>
-      `;
+const player = {
+    maxHp: 30,
+    hp: 30,
+    atk: 5,
+    crit: 10
+};
 
-      // 1回勝負なのでボタン無効化
-      const buttons = document.querySelectorAll('.buttons button');
-      buttons.forEach(btn => btn.disabled = true);
+let enemy = {};
 
-      document.getElementById('restartBtn').style.display = 'block';
+const enemyNames = [
+    "スライム",
+    "ゴブリン",
+    "オーク",
+    "骸骨兵",
+    "ドラゴン"
+];
+
+function createEnemy() {
+
+    let name = floor === 30
+        ? "魔王"
+        : enemyNames[Math.floor(Math.random() * enemyNames.length)];
+
+    enemy = {
+        name: name,
+        maxHp: 15 + floor * 4,
+        hp: 15 + floor * 4,
+        atk: 3 + floor
+    };
+
+    if (floor === 30) {
+        enemy.maxHp = 250;
+        enemy.hp = 250;
+        enemy.atk = 35;
     }
 
-    function restartGame() {
-      location.reload();
+    updateUI();
+}
+
+function updateUI() {
+
+    document.getElementById("floor").innerText =
+        floor + "階層";
+
+    document.getElementById("playerStats").innerHTML =
+        `
+        HP: ${player.hp} / ${player.maxHp}<br>
+        攻撃力: ${player.atk}<br>
+        クリ率: ${player.crit}%
+        `;
+
+    document.getElementById("enemyName").innerText =
+        enemy.name;
+
+    document.getElementById("enemyStats").innerHTML =
+        `
+        HP: ${enemy.hp} / ${enemy.maxHp}<br>
+        攻撃力: ${enemy.atk}
+        `;
+}
+
+function attack() {
+
+    let damage = player.atk;
+
+    let crit = Math.random() * 100 < player.crit;
+
+    if (crit) {
+        damage *= 2;
     }
-  </script>
+
+    enemy.hp -= damage;
+
+    let log =
+        `勇者の攻撃！ ${damage}ダメージ！`;
+
+    if (crit) {
+        log += "<br>クリティカル！";
+    }
+
+    if (enemy.hp <= 0) {
+
+        enemy.hp = 0;
+
+        updateUI();
+
+        if (floor === 30) {
+
+            document.getElementById("log").innerHTML =
+                `
+                魔王を倒した！<br><br>
+                ダンジョン制覇！
+                `;
+
+            document.getElementById("attackBtn").style.display =
+                "none";
+
+            return;
+        }
+
+        document.getElementById("log").innerHTML =
+            log + "<br><br>敵を倒した！<br>能力を強化せよ。";
+
+        document.getElementById("attackBtn").style.display =
+            "none";
+
+        document.getElementById("upgradeArea").style.display =
+            "block";
+
+        return;
+    }
+
+    player.hp -= enemy.atk;
+
+    log += `<br>${enemy.name}の攻撃！ ${enemy.atk}ダメージ！`;
+
+    if (player.hp <= 0) {
+
+        player.hp = 0;
+
+        updateUI();
+
+        document.getElementById("log").innerHTML =
+            `
+            勇者は力尽きた...<br><br>
+            GAME OVER
+            `;
+
+        document.getElementById("attackBtn").style.display =
+            "none";
+
+        return;
+    }
+
+    document.getElementById("log").innerHTML = log;
+
+    updateUI();
+}
+
+function upgrade(type) {
+
+    if (type === "atk") {
+        player.atk += 2;
+    }
+
+    if (type === "hp") {
+        player.maxHp += 10;
+        player.hp += 10;
+    }
+
+    if (type === "crit") {
+        player.crit += 10;
+    }
+
+    floor++;
+
+    document.getElementById("upgradeArea").style.display =
+        "none";
+
+    document.getElementById("attackBtn").style.display =
+        "block";
+
+    createEnemy();
+
+    document.getElementById("log").innerHTML =
+        "次の敵が現れた。";
+}
+
+createEnemy();
+
+</script>
 
 </body>
 </html>

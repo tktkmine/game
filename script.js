@@ -4,6 +4,9 @@ document.getElementById("menuScene");
 const gameScene =
 document.getElementById("gameScene");
 
+const helpScene =
+document.getElementById("helpScene");
+
 let floor;
 let player;
 let inventory;
@@ -29,17 +32,19 @@ const eventPool = [
 "time"
 ];
 
-showMenu();
-
 /* =========================
 SCENE
 ========================= */
+
+showMenu();
 
 function showMenu(){
 
 menuScene.style.display = "flex";
 
 gameScene.style.display = "none";
+
+helpScene.style.display = "none";
 }
 
 function showGame(){
@@ -47,6 +52,34 @@ function showGame(){
 menuScene.style.display = "none";
 
 gameScene.style.display = "flex";
+
+helpScene.style.display = "none";
+}
+
+function openHelp(){
+
+helpScene.style.display = "flex";
+
+if(gameScene.style.display !== "none"){
+
+gameScene.dataset.open = "true";
+
+gameScene.style.display = "none";
+}
+}
+
+function closeHelp(){
+
+helpScene.style.display = "none";
+
+if(gameScene.dataset.open === "true"){
+
+gameScene.style.display = "flex";
+}
+else{
+
+menuScene.style.display = "flex";
+}
 }
 
 /* =========================
@@ -93,7 +126,7 @@ createEnemy();
 
 document.getElementById("log")
 .innerHTML =
-"ダンジョンへ潜入した。";
+"ダンジョンへ潜入した。<br>何を行う？";
 
 showGame();
 }
@@ -193,6 +226,10 @@ enemy.crit = 35;
 updateUI();
 
 drawSprites();
+
+document.getElementById("log")
+.innerHTML =
+`${enemy.name}が現れた。<br>何を行う？`;
 }
 
 /* =========================
@@ -233,6 +270,34 @@ document.getElementById("inventory")
 回復薬 ×${inventory.potion}<br>
 爆薬 ×${inventory.bomb}
 `;
+
+document.getElementById("playerHpBar")
+.style.width =
+(player.hp / player.maxHp * 100)
++ "%";
+
+document.getElementById("enemyHpBar")
+.style.width =
+(enemy.hp / enemy.maxHp * 100)
++ "%";
+}
+
+/* =========================
+ANIMATION
+========================= */
+
+function animateHit(id){
+
+const target =
+document.getElementById(id);
+
+target.classList.add("damage");
+
+setTimeout(() => {
+
+target.classList.remove("damage");
+
+},150);
 }
 
 /* =========================
@@ -257,6 +322,8 @@ damage *= 2;
 
 enemy.hp -= damage;
 
+animateHit("enemySprite");
+
 if(enemy.hp <= 0){
 
 enemy.hp = 0;
@@ -267,7 +334,8 @@ document.getElementById("log")
 .innerHTML =
 `
 ${enemy.name}撃破<br>
-${damage}ダメージ
+${damage}ダメージ<br>
+何を行う？
 `;
 
 showChoices();
@@ -290,6 +358,8 @@ enemyDamage *= 2;
 }
 
 player.hp -= enemyDamage;
+
+animateHit("playerSprite");
 
 if(player.hp <= 0){
 
@@ -330,6 +400,9 @@ log +=
 "<br>敵クリティカル！";
 }
 
+log +=
+"<br>何を行う？";
+
 document.getElementById("log")
 .innerHTML = log;
 }
@@ -365,7 +438,7 @@ closeItemArea();
 
 document.getElementById("log")
 .innerHTML =
-"HP20回復";
+"HP20回復<br>何を行う？";
 }
 
 function useBomb(){
@@ -383,6 +456,8 @@ inventory.bomb--;
 
 enemy.hp -= 20;
 
+animateHit("enemySprite");
+
 if(enemy.hp < 0){
 enemy.hp = 0;
 }
@@ -398,6 +473,16 @@ document.getElementById("log")
 if(enemy.hp <= 0){
 
 showChoices();
+
+document.getElementById("log")
+.innerHTML +=
+"<br>敵撃破<br>何を行う？";
+}
+else{
+
+document.getElementById("log")
+.innerHTML +=
+"<br>何を行う？";
 }
 }
 
@@ -614,7 +699,7 @@ updateUI();
 
 document.getElementById("log")
 .innerHTML =
-"時が巻き戻る";
+"時が巻き戻る<br>何を行う？";
 }
 
 /* =========================
@@ -642,7 +727,8 @@ updateUI();
 
 document.getElementById("log")
 .innerHTML =
-message;
+message +
+"<br>何を行う？";
 }
 
 /* =========================

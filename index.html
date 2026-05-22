@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>30階層の魔王 Ver0.3</title>
+<title>30階層の魔王 Ver0.4</title>
 
 <style>
 body{
@@ -46,6 +46,10 @@ button:active{
     background:#2e7d32;
 }
 
+.item-btn{
+    background:#1565c0;
+}
+
 .enemy-name{
     font-size:24px;
     margin-bottom:10px;
@@ -70,7 +74,13 @@ button:active{
 
 <div class="panel">
 <h2>勇者</h2>
+
 <div id="playerStats"></div>
+
+<hr>
+
+<div id="inventory"></div>
+
 </div>
 
 <div class="panel">
@@ -86,6 +96,15 @@ button:active{
 攻撃
 </button>
 
+<button id="itemBtn" class="item-btn" onclick="toggleItems()">
+アイテム
+</button>
+
+<div id="itemArea" style="display:none;">
+<button onclick="usePotion()">回復薬を使う</button>
+<button onclick="useBomb()">爆薬を使う</button>
+</div>
+
 <div id="choiceArea" class="choice" style="display:none;">
 </div>
 
@@ -96,10 +115,15 @@ button:active{
 let floor = 1;
 
 const player = {
-    maxHp: 30,
-    hp: 30,
-    atk: 5,
-    crit: 10
+    maxHp:30,
+    hp:30,
+    atk:5,
+    crit:10
+};
+
+const inventory = {
+    potion:1,
+    bomb:1
 };
 
 let enemy = {};
@@ -156,6 +180,12 @@ function updateUI(){
     クリ率: ${player.crit}%
     `;
 
+    document.getElementById("inventory").innerHTML =
+    `
+    回復薬 ×${inventory.potion}<br>
+    爆薬 ×${inventory.bomb}
+    `;
+
     document.getElementById("enemyName").innerText =
     enemy.name;
 
@@ -185,6 +215,43 @@ function attack(){
         log += "<br>クリティカル！";
     }
 
+    afterPlayerAction(log);
+}
+
+function enemyTurn(log){
+
+    player.hp -= enemy.atk;
+
+    log += `<br>${enemy.name}の攻撃！ ${enemy.atk}ダメージ！`;
+
+    if(player.hp <= 0){
+
+        player.hp = 0;
+
+        updateUI();
+
+        document.getElementById("log").innerHTML =
+        `
+        勇者は力尽きた...<br><br>
+        GAME OVER
+        `;
+
+        document.getElementById("attackBtn").style.display =
+        "none";
+
+        document.getElementById("itemBtn").style.display =
+        "none";
+
+        return;
+    }
+
+    document.getElementById("log").innerHTML = log;
+
+    updateUI();
+}
+
+function afterPlayerAction(log){
+
     if(enemy.hp <= 0){
 
         enemy.hp = 0;
@@ -202,5 +269,231 @@ function attack(){
             document.getElementById("attackBtn").style.display =
             "none";
 
+            document.getElementById("itemBtn").style.display =
+            "none";
+
             return;
-       
+        }
+
+        document.getElementById("log").innerHTML =
+        log + "<br><br>敵を倒した！";
+
+        document.getElementById("attackBtn").style.display =
+        "none";
+
+        document.getElementById("itemBtn").style.display =
+        "none";
+
+        showChoices();
+
+        return;
+    }
+
+    enemyTurn(log);
+}
+
+function toggleItems(){
+
+    const area = document.getElementById("itemArea");
+
+    if(area.style.display === "none"){
+        area.style.display = "block";
+    }
+    else{
+        area.style.display = "none";
+    }
+}
+
+function usePotion(){
+
+    if(inventory.potion <= 0){
+
+        document.getElementById("log").innerHTML =
+        "回復薬がない。";
+
+        return;
+    }
+
+    inventory.potion--;
+
+    player.hp += 10;
+
+    if(player.hp > player.maxHp){
+        player.hp = player.maxHp;
+    }
+
+    updateUI();
+
+    afterPlayerAction("回復薬を使用。HPが10回復した。");
+}
+
+function useBomb(){
+
+    if(inventory.bomb <= 0){
+
+        document.getElementById("log").innerHTML =
+        "爆薬がない。";
+
+        return;
+    }
+
+    inventory.bomb--;
+
+    enemy.hp -= 10;
+
+    updateUI();
+
+    afterPlayerAction("爆薬を使用。敵に10ダメージ！");
+}
+
+function showChoices(){
+
+    const area = document.getElementById("choiceArea");
+
+    area.innerHTML = "";
+
+    let choices = [];
+
+    while(choices.length < 2){
+
+        let random =
+        eventPool[Math.floor(Math.random()*eventPool.length)];
+
+        if(!choices.includes(random)){
+            choices.push(random);
+        }
+    }
+
+    choices.forEach(choice => {
+
+        let btn = document.createElement("button");
+
+        if(choice === "growth"){
+            btn.innerText = "成長";
+            btn.onclick = growthEvent;
+        }
+
+        if(choice === "rest"){
+            btn.innerText = "休息";
+            btn.onclick = restEvent;
+        }
+
+        if(choice === "gather"){
+            btn.innerText = "採取";
+            btn.onclick = gatherEvent;
+        }
+
+        if(choice === "time"){
+            btn.innerText = "時巡り";
+            btn.onclick = timeEvent;
+        }
+
+        area.appendChild(btn);
+    });
+
+    area.style.display = "block";
+}
+
+function growthEvent(){
+
+    const area = document.getElementById("choiceArea");
+
+    area.innerHTML = `
+    <button onclick="upgrade('atk')">攻撃力アップ (+2)</button>
+    <button onclick="upgrade('hp')">最大HPアップ (+10)</button>
+    <button onclick="upgrade('crit')">クリ率アップ (+10%)</button>
+    `;
+}
+
+function upgrade(type){
+
+    if(type === "atk"){
+        player.atk += 2;
+    }
+
+    if(type === "hp"){
+        player.maxHp += 10;
+        player.hp += 10;
+    }
+
+    if(type === "crit"){
+        player.crit += 10;
+    }
+
+    nextFloor("能力が強化された。");
+}
+
+function restEvent(){
+
+    let heal = Math.floor(player.maxHp * 0.5);
+
+    player.hp += heal;
+
+    if(player.hp > player.maxHp){
+        player.hp = player.maxHp;
+    }
+
+    nextFloor(`休息した。HPが${heal}回復した。`);
+}
+
+function gatherEvent(){
+
+    let rand = Math.random();
+
+    let text = "";
+
+    if(rand < 0.7){
+        inventory.potion++;
+        text = "回復薬を発見した。";
+    }
+    else{
+        inventory.bomb++;
+        text = "爆薬を発見した。";
+    }
+
+    nextFloor(text);
+}
+
+function timeEvent(){
+
+    floor -= 5;
+
+    if(floor < 1){
+        floor = 1;
+    }
+
+    player.hp = player.maxHp;
+
+    nextFloor("時が巻き戻る...HPが全回復した。");
+}
+
+function nextFloor(message){
+
+    floor++;
+
+    document.getElementById("choiceArea").style.display =
+    "none";
+
+    document.getElementById("itemArea").style.display =
+    "none";
+
+    document.getElementById("attackBtn").style.display =
+    "block";
+
+    document.getElementById("itemBtn").style.display =
+    "block";
+
+    createEnemy();
+
+    document.getElementById("log").innerHTML =
+    message + "<br><br>次の敵が現れた。";
+
+    updateUI();
+}
+
+createEnemy();
+
+</script>
+
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>30階層の魔王 Ver0.5</title>
+<title>30階層の魔王 Ver0.6</title>
 
 <style>
 body{
@@ -70,7 +70,6 @@ button:active{
 
 <div class="container">
 
-<!-- メインメニュー -->
 <div id="menuScreen">
 
 <h1>30階層の魔王</h1>
@@ -85,19 +84,23 @@ button:active{
 
 </div>
 
-<!-- ゲーム画面 -->
 <div id="gameScreen" style="display:none;">
 
 <h1>30階層の魔王</h1>
 
 <div class="panel">
-<div id="floor">1階層</div>
+<div id="floor"></div>
 </div>
 
 <div class="panel">
+
 <h2>勇者</h2>
 
 <div id="playerStats"></div>
+
+<hr>
+
+<div id="equipment"></div>
 
 <hr>
 
@@ -106,8 +109,11 @@ button:active{
 </div>
 
 <div class="panel">
+
 <div class="enemy-name" id="enemyName"></div>
+
 <div id="enemyStats"></div>
+
 </div>
 
 <div class="panel log" id="log">
@@ -155,6 +161,20 @@ const enemyNames = [
     "ドラゴン"
 ];
 
+const weapons = [
+    {name:"木の剣", power:1, rate:12},
+    {name:"鉄の剣", power:2, rate:5},
+    {name:"鋼の剣", power:3, rate:2},
+    {name:"伝説の剣", power:4, rate:1}
+];
+
+const armors = [
+    {name:"木の鎧", power:1, rate:12},
+    {name:"鉄の鎧", power:2, rate:5},
+    {name:"鋼の鎧", power:3, rate:2},
+    {name:"伝説の鎧", power:4, rate:1}
+];
+
 const eventPool = [
     "growth",
     "rest",
@@ -173,7 +193,18 @@ function startGame(){
         maxHp:30,
         hp:30,
         atk:5,
-        crit:10
+        def:0,
+        crit:10,
+
+        weapon:{
+            name:"なし",
+            power:0
+        },
+
+        armor:{
+            name:"なし",
+            power:0
+        }
     };
 
     inventory = {
@@ -229,13 +260,18 @@ function createEnemy(){
         name:name,
         maxHp:15 + floor * 4,
         hp:15 + floor * 4,
-        atk:3 + floor
+        atk:3 + floor,
+        def:Math.floor(floor / 5),
+        crit:5 + Math.floor(floor / 3)
     };
 
     if(floor === 30){
+
         enemy.maxHp = 250;
         enemy.hp = 250;
         enemy.atk = 35;
+        enemy.def = 8;
+        enemy.crit = 35;
     }
 
     updateUI();
@@ -250,7 +286,14 @@ function updateUI(){
     `
     HP: ${player.hp} / ${player.maxHp}<br>
     攻撃力: ${player.atk}<br>
+    防御力: ${player.def}<br>
     クリ率: ${player.crit}%
+    `;
+
+    document.getElementById("equipment").innerHTML =
+    `
+    武器：${player.weapon.name}<br>
+    防具：${player.armor.name}
     `;
 
     document.getElementById("inventory").innerHTML =
@@ -265,17 +308,30 @@ function updateUI(){
     document.getElementById("enemyStats").innerHTML =
     `
     HP: ${enemy.hp} / ${enemy.maxHp}<br>
-    攻撃力: ${enemy.atk}
+    攻撃力: ${enemy.atk}<br>
+    防御力: ${enemy.def}<br>
+    クリ率: ${enemy.crit}%
     `;
+}
+
+function calcDamage(atk, def){
+
+    let dmg = atk - def;
+
+    if(dmg < 1){
+        dmg = 1;
+    }
+
+    return dmg;
 }
 
 function attack(){
 
     closeItemArea();
 
-    let damage = player.atk;
-
     let crit = Math.random()*100 < player.crit;
+
+    let damage = calcDamage(player.atk, enemy.def);
 
     if(crit){
         damage *= 2;
@@ -295,9 +351,21 @@ function attack(){
 
 function enemyTurn(log){
 
-    player.hp -= enemy.atk;
+    let crit = Math.random()*100 < enemy.crit;
 
-    log += `<br>${enemy.name}の攻撃！ ${enemy.atk}ダメージ！`;
+    let damage = calcDamage(enemy.atk, player.def);
+
+    if(crit){
+        damage *= 2;
+    }
+
+    player.hp -= damage;
+
+    log += `<br>${enemy.name}の攻撃！ ${damage}ダメージ！`;
+
+    if(crit){
+        log += "<br>敵のクリティカル！";
+    }
 
     if(player.hp <= 0){
 
@@ -341,8 +409,6 @@ function afterPlayerAction(log){
         updateUI();
 
         if(floor === 30){
-
-            closeItemArea();
 
             document.getElementById("log").innerHTML =
             `
@@ -533,13 +599,70 @@ function gatherEvent(){
 
     let text = "";
 
-    if(rand < 0.7){
+    if(rand < 0.5){
+
         inventory.potion++;
         text = "回復薬を発見した。";
     }
-    else{
+    else if(rand < 0.8){
+
         inventory.bomb++;
         text = "爆薬を発見した。";
+    }
+    else{
+
+        let equipmentRoll = Math.random()*100;
+
+        let equipmentList =
+        Math.random() < 0.5 ? weapons : armors;
+
+        for(let equip of equipmentList){
+
+            if(equipmentRoll <= equip.rate){
+
+                if(equipmentList === weapons){
+
+                    if(equip.power > player.weapon.power){
+
+                        player.atk +=
+                        equip.power - player.weapon.power;
+
+                        player.weapon = equip;
+
+                        text =
+                        `${equip.name}を装備した！`;
+                    }
+                    else{
+                        text =
+                        `${equip.name}を発見したが使わなかった。`;
+                    }
+                }
+                else{
+
+                    if(equip.power > player.armor.power){
+
+                        player.def +=
+                        equip.power - player.armor.power;
+
+                        player.armor = equip;
+
+                        text =
+                        `${equip.name}を装備した！`;
+                    }
+                    else{
+                        text =
+                        `${equip.name}を発見したが使わなかった。`;
+                    }
+                }
+
+                break;
+            }
+        }
+
+        if(text === ""){
+            inventory.potion++;
+            text = "何も見つからず回復薬を拾った。";
+        }
     }
 
     nextFloor(text);

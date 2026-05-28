@@ -5,78 +5,72 @@ export const monsters = [
   ===================== */
 
   {
-    id: "fire_a",
+    id: "fire_c_1",
 
-    name: "獄炎竜イグゼル",
+    name: "フレイムウルフ",
 
-    rank: "A",
-
-    world: "焔界",
-
-    element: "fire",
-
-    hp: 150,
-
-    atk: 32,
-
-    def: 18,
-
-    spd: 14,
-
-    skill: "インフェルノブレス",
-
-    description:
-      "焔界最強と恐れられる古代火竜。"
-  },
-
-  {
-    id: "fire_b",
-
-    name: "バルグロン",
-
-    rank: "B",
+    rank: "c",
 
     world: "焔界",
 
     element: "fire",
 
-    hp: 120,
+    hp: 90,
 
-    atk: 24,
+    atk: 28,
 
-    def: 16,
-
-    spd: 12,
-
-    skill: "マグマナックル",
-
-    description:
-      "溶岩を纏った豪腕熊。"
-  },
-
-  {
-    id: "fire_c",
-
-    name: "フレイビット",
-
-    rank: "C",
-
-    world: "焔界",
-
-    element: "fire",
-
-    hp: 80,
-
-    atk: 15,
-
-    def: 10,
+    def: 12,
 
     spd: 18,
 
-    skill: "ファイアダッシュ",
+    description:
+      "炎を纏って駆ける紅蓮の狼。"
+  },
+
+  {
+    id: "fire_b_1",
+
+    name: "マグマゴーレム",
+
+    rank: "b",
+
+    world: "焔界",
+
+    element: "fire",
+
+    hp: 140,
+
+    atk: 36,
+
+    def: 28,
+
+    spd: 8,
 
     description:
-      "小柄ながら素早い火炎兎。"
+      "灼熱の岩石で構成された巨兵。"
+  },
+
+  {
+    id: "fire_a_1",
+
+    name: "イグニスドラゴン",
+
+    rank: "a",
+
+    world: "焔界",
+
+    element: "fire",
+
+    hp: 180,
+
+    atk: 52,
+
+    def: 30,
+
+    spd: 20,
+
+    description:
+      "火山の頂点に君臨する炎竜。"
   },
 
   /* =====================
@@ -84,11 +78,34 @@ export const monsters = [
   ===================== */
 
   {
-    id: "nature_a",
+    id: "nature_c_1",
 
-    name: "世界樹獣ユグラシア",
+    name: "リーフラビット",
 
-    rank: "A",
+    rank: "c",
+
+    world: "森界",
+
+    element: "nature",
+
+    hp: 100,
+
+    atk: 20,
+
+    def: 20,
+
+    spd: 22,
+
+    description:
+      "森を素早く駆ける草原の兎。"
+  },
+
+  {
+    id: "nature_b_1",
+
+    name: "ウッドベア",
+
+    rank: "b",
 
     world: "森界",
 
@@ -96,66 +113,37 @@ export const monsters = [
 
     hp: 160,
 
-    atk: 26,
+    atk: 30,
 
-    def: 24,
+    def: 34,
 
     spd: 10,
 
-    skill: "フォレストガード",
-
     description:
-      "生命力に満ちた森界の守護獣。"
+      "古樹の加護を受けた巨大熊。"
   },
 
   {
-    id: "nature_b",
+    id: "nature_a_1",
 
-    name: "グランベル",
+    name: "エルダーエント",
 
-    rank: "B",
+    rank: "a",
 
     world: "森界",
 
     element: "nature",
 
-    hp: 115,
+    hp: 220,
 
-    atk: 22,
+    atk: 42,
 
-    def: 18,
+    def: 42,
 
-    spd: 13,
-
-    skill: "ホーンラッシュ",
+    spd: 6,
 
     description:
-      "巨大な角で森を守護する神聖獣。"
-  },
-
-  {
-    id: "nature_c",
-
-    name: "リーフィ",
-
-    rank: "C",
-
-    world: "森界",
-
-    element: "nature",
-
-    hp: 85,
-
-    atk: 13,
-
-    def: 12,
-
-    spd: 17,
-
-    skill: "リーフカッター",
-
-    description:
-      "森を駆け回る葉尾の精霊狐。"
+      "数百年を生きる森の守護者。"
   },
 
   /* =====================
@@ -163,78 +151,72 @@ export const monsters = [
   ===================== */
 
   {
-    id: "water_a",
+    id: "water_c_1",
 
-    name: "海王獣ネプトア",
+    name: "アクアスライム",
 
-    rank: "A",
+    rank: "c",
 
     world: "海界",
 
     element: "water",
 
-    hp: 145,
+    hp: 110,
 
-    atk: 28,
+    atk: 18,
 
-    def: 20,
+    def: 18,
 
-    spd: 15,
-
-    skill: "アビスウェーブ",
+    spd: 18,
 
     description:
-      "海界を統べる伝説の深海王。"
+      "海流のように姿を変える水魔物。"
   },
 
   {
-    id: "water_b",
+    id: "water_b_1",
 
-    name: "レヴィア",
+    name: "シェルクラブ",
 
-    rank: "B",
+    rank: "b",
 
     world: "海界",
 
     element: "water",
 
-    hp: 118,
+    hp: 170,
 
-    atk: 23,
+    atk: 26,
 
-    def: 17,
+    def: 40,
 
-    spd: 14,
-
-    skill: "タイダルバイト",
+    spd: 8,
 
     description:
-      "暗海を泳ぐ巨大海蛇。"
+      "鋼鉄の甲殻を持つ深海蟹。"
   },
 
   {
-    id: "water_c",
+    id: "water_a_1",
 
-    name: "バブルン",
+    name: "リヴァイアサン",
 
-    rank: "C",
+    rank: "a",
 
     world: "海界",
 
     element: "water",
 
-    hp: 90,
+    hp: 210,
 
-    atk: 14,
+    atk: 46,
 
-    def: 11,
+    def: 34,
 
     spd: 16,
 
-    skill: "バブルショット",
-
     description:
-      "泡を操る深海生物。"
+      "海を支配する伝説級海竜。"
   },
 
   /* =====================
@@ -242,78 +224,72 @@ export const monsters = [
   ===================== */
 
   {
-    id: "thunder_a",
+    id: "thunder_c_1",
 
-    name: "天雷機神ゼルヴァ",
+    name: "スパークバード",
 
-    rank: "A",
+    rank: "c",
 
     world: "雷界",
 
     element: "thunder",
 
-    hp: 135,
+    hp: 80,
 
-    atk: 34,
+    atk: 24,
 
-    def: 17,
+    def: 10,
 
-    spd: 20,
-
-    skill: "プラズマカノン",
+    spd: 32,
 
     description:
-      "雷界文明が生み出した超機械兵器。"
+      "雷光の如き速度で飛ぶ鳥。"
   },
 
   {
-    id: "thunder_b",
+    id: "thunder_b_1",
 
-    name: "サンダルク",
+    name: "ボルトタイガー",
 
-    rank: "B",
+    rank: "b",
 
     world: "雷界",
 
     element: "thunder",
 
-    hp: 105,
+    hp: 130,
 
-    atk: 25,
+    atk: 38,
 
-    def: 14,
+    def: 18,
 
-    spd: 19,
-
-    skill: "ライトニングファング",
+    spd: 28,
 
     description:
-      "雷鳴と共に現れる俊足の雷狼。"
+      "雷鳴と共に現れる稲妻の虎。"
   },
 
   {
-    id: "thunder_c",
+    id: "thunder_a_1",
 
-    name: "スパーキー",
+    name: "ゼノライト",
 
-    rank: "C",
+    rank: "a",
 
     world: "雷界",
 
     element: "thunder",
 
-    hp: 78,
+    hp: 170,
 
-    atk: 16,
+    atk: 54,
 
-    def: 9,
+    def: 24,
 
-    spd: 22,
-
-    skill: "スパークショット",
+    spd: 40,
 
     description:
-      "小さな身体に高電圧を秘めた雷獣。"
+      "超高速で戦場を切り裂く雷帝。"
   },
 
   /* =====================
@@ -321,78 +297,72 @@ export const monsters = [
   ===================== */
 
   {
-    id: "earth_a",
+    id: "earth_c_1",
 
-    name: "古代皇竜バハルド",
+    name: "ストーンモール",
 
-    rank: "A",
+    rank: "c",
 
     world: "岩界",
 
     element: "earth",
 
-    hp: 170,
+    hp: 120,
 
-    atk: 24,
+    atk: 18,
 
-    def: 30,
+    def: 28,
 
     spd: 8,
 
-    skill: "グランドインパクト",
-
     description:
-      "古代遺跡で眠っていた岩界の皇竜。"
+      "大地を掘り進む岩の獣。"
   },
 
   {
-    id: "earth_b",
+    id: "earth_b_1",
 
-    name: "ガイガロン",
+    name: "グランドタートル",
 
-    rank: "B",
+    rank: "b",
 
     world: "岩界",
 
     element: "earth",
 
-    hp: 130,
+    hp: 200,
 
-    atk: 20,
+    atk: 24,
 
-    def: 24,
+    def: 46,
 
-    spd: 9,
-
-    skill: "ロッククラッシュ",
+    spd: 4,
 
     description:
-      "巨大な岩鎧を持つ重装獣。"
+      "巨大な甲羅を持つ古代亀。"
   },
 
   {
-    id: "earth_c",
+    id: "earth_a_1",
 
-    name: "ロックン",
+    name: "ギガント",
 
-    rank: "C",
+    rank: "a",
 
     world: "岩界",
 
     element: "earth",
 
-    hp: 95,
+    hp: 260,
 
-    atk: 12,
+    atk: 40,
 
-    def: 16,
+    def: 52,
 
-    spd: 10,
-
-    skill: "ストーンパンチ",
+    spd: 3,
 
     description:
-      "岩の拳で戦う頑丈な岩猿。"
+      "山脈級の力を持つ岩界巨人。"
   }
 
 ];

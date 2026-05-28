@@ -1,18 +1,47 @@
-import { monsters }
+import {
+
+  monsters
+
+}
 from "../data/monsters.js";
 
+import {
+
+  addMonster,
+
+  saveGame
+
+}
+from "./save.js";
+
 /* =====================
-   レア率
+   ガチャ価格
 ===================== */
 
-const rarityRates = {
+export const GACHA_COST = 100;
 
-  c: 60,
+/* =====================
+   排出率
+===================== */
 
-  b: 30,
+const rarityTable = [
 
-  a: 10
-};
+  {
+    rank: "a",
+    rate: 10
+  },
+
+  {
+    rank: "b",
+    rate: 30
+  },
+
+  {
+    rank: "c",
+    rate: 60
+  }
+
+];
 
 /* =====================
    ランク抽選
@@ -23,30 +52,23 @@ export function rollRarity() {
   const random =
     Math.random() * 100;
 
-  /* C */
+  let total = 0;
 
-  if (
-    random <
-    rarityRates.c
+  for (
+    const rarity
+    of
+    rarityTable
   ) {
 
-    return "c";
+    total += rarity.rate;
+
+    if (random <= total) {
+
+      return rarity.rank;
+    }
   }
 
-  /* B */
-
-  if (
-    random <
-    rarityRates.c +
-    rarityRates.b
-  ) {
-
-    return "b";
-  }
-
-  /* A */
-
-  return "a";
+  return "c";
 }
 
 /* =====================
@@ -64,7 +86,6 @@ export function getMonstersByRank(
 
       return (
         monster.rank
-          .toLowerCase()
         ===
         rank
       );
@@ -73,10 +94,10 @@ export function getMonstersByRank(
 }
 
 /* =====================
-   ガチャ実行
+   モンスター抽選
 ===================== */
 
-export function executeGacha() {
+export function rollMonster() {
 
   /* ランク */
 
@@ -96,13 +117,77 @@ export function executeGacha() {
   const randomIndex =
 
     Math.floor(
-      Math.random() *
-      candidates.length
-    );
 
-  /* 排出 */
+      Math.random()
+      *
+      candidates.length
+
+    );
 
   return candidates[
     randomIndex
   ];
+}
+
+/* =====================
+   ガチャ実行
+===================== */
+
+export function executeGacha({
+
+  playerData
+
+}) {
+
+  /* 金不足 */
+
+  if (
+
+    playerData.gold
+    <
+    GACHA_COST
+
+  ) {
+
+    return {
+
+      success: false,
+
+      message:
+        "ゴールド不足"
+    };
+  }
+
+  /* 消費 */
+
+  playerData.gold -=
+    GACHA_COST;
+
+  /* 抽選 */
+
+  const monster =
+    rollMonster();
+
+  /* 所持追加 */
+
+  addMonster({
+
+    saveData:
+      playerData,
+
+    monsterId:
+      monster.id
+
+  });
+
+  /* 保存 */
+
+  saveGame(playerData);
+
+  return {
+
+    success: true,
+
+    monster
+  };
 }

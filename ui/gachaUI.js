@@ -4,112 +4,134 @@
 
 export function showGachaResult({
 
-  resultScreenId,
-
   monster
 
 }) {
 
-  const resultScreen =
+  const resultBox =
 
     document.getElementById(
-      resultScreenId
+      "gacha-result"
     );
 
-  /* 表示 */
+  resultBox.innerHTML = `
 
-  resultScreen.style.display =
-    "flex";
+    <div class="gacha-card">
 
-  /* 名前 */
+      <div class="gacha-rank">
 
-  document.getElementById(
-    "gacha-monster-name"
-  ).textContent =
-    monster.name;
+        ${monster.rank.toUpperCase()}
 
-  /* ランク */
+      </div>
 
-  document.getElementById(
-    "gacha-monster-rank"
-  ).textContent =
-    monster.rank.toUpperCase();
+      <h3>
 
-  /* 世界 */
+        ${monster.name}
 
-  document.getElementById(
-    "gacha-monster-world"
-  ).textContent =
-    monster.world;
+      </h3>
 
-  /* 説明 */
+      <p>
 
-  document.getElementById(
-    "gacha-monster-desc"
-  ).textContent =
-    monster.description;
-}
+        ${monster.world}
 
-/* =====================
-   ガチャ結果非表示
-===================== */
+      </p>
 
-export function hideGachaResult(
+      <p>
 
-  resultScreenId
+        ${monster.description}
 
-) {
+      </p>
 
-  document.getElementById(
-    resultScreenId
-  ).style.display =
-    "none";
+      <div class="gacha-stats">
+
+        <p>
+          HP:
+          ${monster.hp}
+        </p>
+
+        <p>
+          ATK:
+          ${monster.atk}
+        </p>
+
+        <p>
+          DEF:
+          ${monster.def}
+        </p>
+
+        <p>
+          SPD:
+          ${monster.spd}
+        </p>
+
+      </div>
+
+    </div>
+
+  `;
+
+  /* レア演出 */
+
+  if (
+    monster.rank === "a"
+  ) {
+
+    playRareEffect();
+  }
 }
 
 /* =====================
    レア演出
 ===================== */
 
-export function playRareEffect(
+export function playRareEffect() {
 
-  rank
+  document.body.classList.add(
+    "rare-effect"
+  );
 
-) {
+  setTimeout(() => {
 
-  /* Aランク */
+    document.body.classList.remove(
+      "rare-effect"
+    );
 
-  if (rank === "a") {
-
-    document.body.classList
-      .add("rare-effect");
-
-    setTimeout(() => {
-
-      document.body.classList
-        .remove(
-          "rare-effect"
-        );
-
-    }, 1000);
-  }
+  }, 1000);
 }
 
 /* =====================
-   ガチャボタン
+   ガチャ結果削除
 ===================== */
 
-export function initializeGachaButton({
-
-  buttonId,
-
-  onGacha
-
-}) {
+export function clearGachaResult() {
 
   document.getElementById(
-    buttonId
-  ).onclick = () => {
+    "gacha-result"
+  ).innerHTML = "";
+}
 
-    onGacha();
-  };
+/* =====================
+   ガチャ画面表示
+===================== */
+
+export function showGachaScreen() {
+
+  document.getElementById(
+    "gacha-screen"
+  ).classList.add(
+    "active"
+  );
+}
+
+/* =====================
+   ガチャ画面非表示
+===================== */
+
+export function hideGachaScreen() {
+
+  document.getElementById(
+    "gacha-screen"
+  ).classList.remove(
+    "active"
+  );
 }

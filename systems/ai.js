@@ -1,49 +1,82 @@
 /* =====================
-   AI行動選択
+   AI思考
 ===================== */
 
-export function chooseAction(aiMonster) {
+export function decideEnemyAction({
 
-  /* ランダム */
+  enemy
 
-  const random =
-    Math.random();
+}) {
 
-  /* =====================
-     スキル使用
-  ===================== */
+  /* 基本倍率 */
 
-  if (random > 0.5) {
+  let multiplier =
 
-    return {
+    1 +
+    Math.random() * 4;
 
-      type: "skill",
+  /* SPD高いほど精度UP */
 
-      skillName:
-        aiMonster.skill
-    };
+  if (enemy.spd >= 30) {
+
+    multiplier += 0.5;
   }
 
-  /* =====================
-     通常攻撃
-  ===================== */
+  /* 上限 */
 
-  return {
+  if (multiplier > 5) {
 
-    type: "attack"
-  };
+    multiplier = 5;
+  }
+
+  return multiplier;
 }
 
 /* =====================
-   AIゲージ倍率
+   AI待機時間
 ===================== */
 
-export function generateAIMultiplier() {
+export function getEnemyDelay() {
 
-  /* 1.0〜5.0 */
+  return (
 
-  const multiplier =
-    1 + Math.random() * 4;
+    700 +
+    Math.random() * 800
 
-  return multiplier;
+  );
+}
+
+/* =====================
+   AIログ
+===================== */
+
+export function getEnemyMessage({
+
+  enemy
+
+}) {
+
+  const messages = [
+
+    `${enemy.name} が様子を見ている...`,
+
+    `${enemy.name} が攻撃の隙を狙っている！`,
+
+    `${enemy.name} が力を溜めている！`,
+
+    `${enemy.name} が唸り声を上げた！`
+
+  ];
+
+  const randomIndex =
+
+    Math.floor(
+      Math.random()
+      *
+      messages.length
+    );
+
+  return messages[
+    randomIndex
+  ];
 }

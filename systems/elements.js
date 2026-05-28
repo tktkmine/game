@@ -2,59 +2,83 @@
    属性相性
 ===================== */
 
-export const elementAdvantage = {
+const elementTable = {
 
-  fire: "nature",
+  fire: {
 
-  nature: "water",
+    strong:
+      "nature",
 
-  water: "thunder",
+    weak:
+      "water"
+  },
 
-  thunder: "earth",
+  nature: {
 
-  earth: "fire"
+    strong:
+      "earth",
+
+    weak:
+      "fire"
+  },
+
+  water: {
+
+    strong:
+      "fire",
+
+    weak:
+      "thunder"
+  },
+
+  thunder: {
+
+    strong:
+      "water",
+
+    weak:
+      "earth"
+  },
+
+  earth: {
+
+    strong:
+      "thunder",
+
+    weak:
+      "nature"
+  }
+
 };
-
-/* =====================
-   属性有利判定
-===================== */
-
-export function isAdvantage(
-
-  attackerElement,
-
-  defenderElement
-
-) {
-
-  return (
-    elementAdvantage[
-      attackerElement
-    ]
-    ===
-    defenderElement
-  );
-}
 
 /* =====================
    属性倍率取得
 ===================== */
 
-export function getElementMultiplier(
+export function getElementMultiplier({
 
-  attackerElement,
+  attacker,
 
-  defenderElement
+  defender
 
-) {
+}) {
+
+  const attackElement =
+    attacker.element;
+
+  const defendElement =
+    defender.element;
+
+  const relation =
+    elementTable[
+      attackElement
+    ];
 
   /* 有利 */
 
   if (
-    isAdvantage(
-      attackerElement,
-      defenderElement
-    )
+    relation.strong ===
+    defendElement
   ) {
 
     return 1.5;
@@ -63,10 +87,8 @@ export function getElementMultiplier(
   /* 不利 */
 
   if (
-    isAdvantage(
-      defenderElement,
-      attackerElement
-    )
+    relation.weak ===
+    defendElement
   ) {
 
     return 0.75;
@@ -74,5 +96,43 @@ export function getElementMultiplier(
 
   /* 等倍 */
 
-  return 1.0;
+  return 1;
+}
+
+/* =====================
+   相性テキスト
+===================== */
+
+export function getElementText({
+
+  attacker,
+
+  defender
+
+}) {
+
+  const multiplier =
+    getElementMultiplier({
+
+      attacker,
+
+      defender
+
+    });
+
+  /* 有利 */
+
+  if (multiplier > 1) {
+
+    return "効果抜群！";
+  }
+
+  /* 不利 */
+
+  if (multiplier < 1) {
+
+    return "効果はいまひとつ...";
+  }
+
+  return "通常ダメージ";
 }

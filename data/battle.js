@@ -1,56 +1,304 @@
+import {
+
+  calculateDamage,
+
+  applyDamage,
+
+  isDead
+
+}
+from "./damage.js";
+
+import {
+
+  startGauge,
+
+  stopGauge
+
+}
+from "./gauge.js";
+
+import {
+
+  getElementText
+
+}
+from "./elements.js";
+
 /* =====================
-   属性相性
+   戦闘開始
 ===================== */
 
-const strengths = {
+export function initializeBattle({
 
-  fire: "nature",
+  player,
 
-  nature: "water",
+  enemy,
 
-  water: "thunder",
+  gaugeBarId,
 
-  thunder: "earth",
+  multiplierTextId
 
-  earth: "fire"
-};
+}) {
+
+  /* 現在HP */
+
+  player.currentHp =
+    player.hp;
+
+  enemy.currentHp =
+    enemy.hp;
+
+  /* SPD比較 */
+
+  const firstAttacker =
+
+    player.spd >= enemy.spd
+      ? player
+      : enemy;
+
+  return {
+
+    player,
+
+    enemy,
+
+    turn:
+      firstAttacker.id
+  };
+}
 
 /* =====================
-   ダメージ計算
+   プレイヤー攻撃
 ===================== */
 
-export function calculateDamage(
-  attacker,
-  defender,
-  multiplier
-) {
+export function playerAttack({
 
-  /* 基本ダメージ */
+  battleData,
 
-  let damage =
-    (
-      attacker.atk -
-      defender.def
-    ) * multiplier;
+  logElementId
 
-  /* 属性有利 */
+}) {
+
+  /* ゲージ停止 */
+
+  const multiplier =
+    stopGauge();
+
+  const damage =
+
+    calculateDamage({
+
+      attacker:
+        battleData.player,
+
+      defender:
+        battleData.enemy,
+
+      gaugeMultiplier:
+        multiplier
+
+    });
+
+  /* ダメージ適用 */
+
+  applyDamage({
+
+    target:
+      battleData.enemy,
+
+    damage
+
+  });
+
+  /* ログ */
+
+  const elementText =
+
+    getElementText({
+
+      attacker:
+        battleData.player,
+
+      defender:
+        battleData.enemy
+
+    });
+
+  addBattleLog({
+
+    logElementId,
+
+    text:
+
+      `${battleData.player.name}
+       の攻撃！
+       ${damage} ダメージ！
+       ${elementText}`
+
+  });
+
+  /* 勝利 */
 
   if (
-    strengths[attacker.element]
-    ===
-    defender.element
+    isDead(
+      battleData.enemy
+    )
   ) {
 
-    damage *= 1.5;
+    return {
+
+      finished: true,
+
+      winner: "player"
+    };
   }
 
-  /* 最低保証 */
+  return {
 
-  damage =
-    Math.max(
-      1,
-      Math.floor(damage)
+    finished: false
+  };
+}
+
+/* =====================
+   敵攻撃
+===================== */
+
+export function enemyAttack({
+
+  battleData,
+
+  logElementId
+
+}) {
+
+  /* AI倍率 */
+
+  const multiplier =
+
+    1 +
+    Math.random() * 4;
+
+  const damage =
+
+    calculateDamage({
+
+      attacker:
+        battleData.enemy,
+
+      defender:
+        battleData.player,
+
+      gaugeMultiplier:
+        multiplier
+
+    });
+
+  /* ダメージ */
+
+  applyDamage({
+
+    target:
+      battleData.player,
+
+    damage
+
+  });
+
+  /* ログ */
+
+  const elementText =
+
+    getElementText({
+
+      attacker:
+        battleData.enemy,
+
+      defender:
+        battleData.player
+
+    });
+
+  addBattleLog({
+
+    logElementId,
+
+    text:
+
+      `${battleData.enemy.name}
+       の攻撃！
+       ${damage} ダメージ！
+       ${elementText}`
+
+  });
+
+  /* 敗北 */
+
+  if (
+    isDead(
+      battleData.player
+    )
+  ) {
+
+    return {
+
+      finished: true,
+
+      winner: "enemy"
+    };
+  }
+
+  return {
+
+    finished: false
+  };
+}
+
+/* =====================
+   ログ追加
+===================== */
+
+export function addBattleLog({
+
+  logElementId,
+
+  text
+
+}) {
+
+  const logElement =
+
+    document.getElementById(
+      logElementId
     );
 
-  return damage;
+  const log =
+    document.createElement(
+      "p"
+    );
+
+  log.textContent = text;
+
+  logElement.prepend(log);
+}
+
+/* =====================
+   ゲージ開始補助
+===================== */
+
+export function beginPlayerGauge({
+
+  gaugeBarId,
+
+  multiplierTextId
+
+}) {
+
+  startGauge({
+
+    gaugeBarId,
+
+    multiplierTextId
+
+  });
 }

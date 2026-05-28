@@ -2,10 +2,10 @@
    最大編成数
 ===================== */
 
-const MAX_PARTY = 3;
+const MAX_PARTY_SIZE = 3;
 
 /* =====================
-   編成取得
+   パーティ取得
 ===================== */
 
 export function getParty(
@@ -18,10 +18,10 @@ export function getParty(
 }
 
 /* =====================
-   編成追加
+   編成可能判定
 ===================== */
 
-export function addToParty({
+export function canAddParty({
 
   playerData,
 
@@ -29,29 +29,14 @@ export function addToParty({
 
 }) {
 
-  /* 最大数 */
-
-  if (
-    playerData.party.length
-    >=
-    MAX_PARTY
-  ) {
-
-    return {
-
-      success: false,
-
-      message:
-        "これ以上編成できない"
-    };
-  }
-
   /* 重複 */
 
   if (
+
     playerData.party.includes(
       monsterId
     )
+
   ) {
 
     return {
@@ -63,11 +48,24 @@ export function addToParty({
     };
   }
 
-  /* 追加 */
+  /* 上限 */
 
-  playerData.party.push(
-    monsterId
-  );
+  if (
+
+    playerData.party.length
+    >=
+    MAX_PARTY_SIZE
+
+  ) {
+
+    return {
+
+      success: false,
+
+      message:
+        "編成上限"
+    };
+  }
 
   return {
 
@@ -76,7 +74,49 @@ export function addToParty({
 }
 
 /* =====================
-   編成解除
+   パーティ追加
+===================== */
+
+export function addToParty({
+
+  playerData,
+
+  monsterId
+
+}) {
+
+  const check =
+
+    canAddParty({
+
+      playerData,
+
+      monsterId
+
+    });
+
+  /* 失敗 */
+
+  if (!check.success) {
+
+    return check;
+  }
+
+  playerData.party.push(
+    monsterId
+  );
+
+  return {
+
+    success: true,
+
+    message:
+      "編成完了"
+  };
+}
+
+/* =====================
+   パーティ解除
 ===================== */
 
 export function removeFromParty({
@@ -100,12 +140,15 @@ export function removeFromParty({
 
   return {
 
-    success: true
+    success: true,
+
+    message:
+      "編成解除"
   };
 }
 
 /* =====================
-   編成チェック
+   編成済み確認
 ===================== */
 
 export function isInParty({
@@ -116,12 +159,17 @@ export function isInParty({
 
 }) {
 
-  return playerData.party
-    .includes(monsterId);
+  return (
+
+    playerData.party.includes(
+      monsterId
+    )
+
+  );
 }
 
 /* =====================
-   編成リセット
+   パーティリセット
 ===================== */
 
 export function clearParty(

@@ -1,3 +1,23 @@
+import {
+
+  startGauge,
+
+  stopGauge,
+
+  getGaugeMultiplier
+
+}
+from "./systems/gauge.js";
+
+import {
+
+  setBattleLog,
+
+  showStopResult
+
+}
+from "./ui/battleUI.js";
+
 /* =====================
    画面取得
 ===================== */
@@ -61,15 +81,12 @@ function showScreen(screen) {
 }
 
 /* =====================
-   タイトル開始
+   タイトル
 ===================== */
 
-const startBtn =
-  document.getElementById(
-    "start-btn"
-  );
-
-startBtn.onclick = () => {
+document.getElementById(
+  "start-btn"
+).onclick = () => {
 
   showScreen(
     screens.menu
@@ -87,6 +104,8 @@ document.getElementById(
   showScreen(
     screens.tame
   );
+
+  initializeBattle();
 };
 
 document.getElementById(
@@ -117,7 +136,7 @@ document.getElementById(
 };
 
 /* =====================
-   戻るボタン
+   戻る
 ===================== */
 
 const backButtons =
@@ -128,6 +147,8 @@ const backButtons =
 backButtons.forEach(button => {
 
   button.onclick = () => {
+
+    stopGauge();
 
     showScreen(
       screens.menu
@@ -177,137 +198,74 @@ gameTitle.animate(
 );
 
 /* =====================
-   STOPゲージ
+   バトル初期化
 ===================== */
 
-const gaugeBar =
-  document.getElementById(
-    "gauge-bar"
+function initializeBattle() {
+
+  setBattleLog(
+
+    "戦闘開始！"
   );
 
-const gaugeText =
-  document.getElementById(
-    "gauge-text"
-  );
+  const gaugeBar =
+    document.getElementById(
+      "gauge-bar"
+    );
 
-const stopBtn =
-  document.getElementById(
-    "stop-btn"
-  );
+  const gaugeText =
+    document.getElementById(
+      "gauge-text"
+    );
 
-let gaugeValue = 0;
+  startGauge({
 
-let gaugeDirection = 1;
+    gaugeBar,
 
-let gaugeAnimation = null;
+    gaugeText
 
-/* =====================
-   ゲージ開始
-===================== */
-
-function startGauge() {
-
-  clearInterval(
-    gaugeAnimation
-  );
-
-  gaugeValue = 0;
-
-  gaugeDirection = 1;
-
-  gaugeAnimation = setInterval(() => {
-
-    gaugeValue +=
-      gaugeDirection * 2;
-
-    /* 往復 */
-
-    if (gaugeValue >= 100) {
-
-      gaugeValue = 100;
-
-      gaugeDirection = -1;
-    }
-
-    if (gaugeValue <= 0) {
-
-      gaugeValue = 0;
-
-      gaugeDirection = 1;
-    }
-
-    /* UI更新 */
-
-    gaugeBar.style.width =
-      `${gaugeValue}%`;
-
-    /* 倍率 */
-
-    const multiplier =
-
-      (
-        1 +
-        gaugeValue / 25
-      ).toFixed(1);
-
-    gaugeText.textContent =
-      `x${multiplier}`;
-
-  }, 16);
+  });
 }
 
 /* =====================
    STOP
 ===================== */
 
-stopBtn.onclick = () => {
+document.getElementById(
+  "stop-btn"
+).onclick = () => {
 
-  clearInterval(
-    gaugeAnimation
-  );
+  stopGauge();
 
   const multiplier =
+    getGaugeMultiplier();
 
-    (
-      1 +
-      gaugeValue / 25
-    ).toFixed(1);
+  showStopResult({
 
-  const battleLog =
-    document.getElementById(
-      "battle-log"
-    );
+    multiplier
+  });
 
-  battleLog.innerHTML =
-
-    `
-    STOP！
-    <br>
-    攻撃倍率 :
-    x${multiplier}
-    `;
-
-  /* 1秒後再開 */
+  /* 再開 */
 
   setTimeout(() => {
 
-    startGauge();
+    const gaugeBar =
+      document.getElementById(
+        "gauge-bar"
+      );
+
+    const gaugeText =
+      document.getElementById(
+        "gauge-text"
+      );
+
+    startGauge({
+
+      gaugeBar,
+
+      gaugeText
+
+    });
 
   }, 1000);
 };
-
-/* =====================
-   モンスターテイム開始時
-===================== */
-
-document.getElementById(
-  "menu-tame"
-).addEventListener(
-
-  "click",
-
-  () => {
-
-    startGauge();
-  }
-);

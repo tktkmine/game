@@ -10,7 +10,11 @@
     content="width=device-width, initial-scale=1.0"
   />
 
-  <title>幻界大戦</title>
+  <title>
+
+    幻界大戦
+
+  </title>
 
   <link
     rel="stylesheet"
@@ -30,22 +34,22 @@
     class="screen active"
   >
 
-    <h1 id="game-title">
+    <h1 class="game-title">
+
       幻界大戦
+
     </h1>
 
-    <p class="subtitle">
-      5つの世界が争うモンスター戦争
-    </p>
-
     <button id="start-btn">
+
       GAME START
+
     </button>
 
   </section>
 
   <!-- =====================
-       メインメニュー
+       メニュー画面
   ====================== -->
 
   <section
@@ -54,25 +58,43 @@
   >
 
     <h2>
+
       メインメニュー
+
     </h2>
 
     <div class="menu-buttons">
 
-      <button id="menu-battle">
+      <button id="menu-tame">
+
         モンスターテイム
+        <br>
+        (AIバトル)
+
       </button>
 
-      <button id="menu-gacha">
-        ガチャ
+      <button id="menu-territory">
+
+        領土争奪戦
+        <br>
+        (オンライン対戦)
+
+      </button>
+
+      <button id="menu-training">
+
+        トレーニングバトル
+        <br>
+        (オンライン対戦)
+
       </button>
 
       <button id="menu-home">
-        マイホーム
-      </button>
 
-      <button id="menu-collection">
-        モンスター図鑑
+        マイホーム
+        <br>
+        (パートナー選択 / コレクション)
+
       </button>
 
     </div>
@@ -80,108 +102,27 @@
   </section>
 
   <!-- =====================
-       バトル画面
+       モンスターテイム
   ====================== -->
 
   <section
-    id="battle-screen"
+    id="tame-screen"
     class="screen"
   >
 
     <h2>
+
       モンスターテイム
+
     </h2>
 
-    <!-- プレイヤー -->
+    <p>
 
-    <div class="battle-card">
+      AIバトル画面（仮）
 
-      <h3 id="player-name">
-        プレイヤー
-      </h3>
-
-      <p id="player-rank">
-        Rank
-      </p>
-
-      <p id="player-desc">
-        Description
-      </p>
-
-      <div class="hp-bar">
-
-        <div
-          id="player-hp-fill"
-          class="hp-fill"
-        ></div>
-
-      </div>
-
-      <p id="player-hp-text">
-        HP
-      </p>
-
-    </div>
-
-    <!-- ENEMY -->
-
-    <div class="battle-card enemy">
-
-      <h3 id="enemy-name">
-        Enemy
-      </h3>
-
-      <p id="enemy-rank">
-        Rank
-      </p>
-
-      <p id="enemy-desc">
-        Description
-      </p>
-
-      <div class="hp-bar">
-
-        <div
-          id="enemy-hp-fill"
-          class="hp-fill enemy-fill"
-        ></div>
-
-      </div>
-
-      <p id="enemy-hp-text">
-        HP
-      </p>
-
-    </div>
-
-    <!-- ゲージ -->
-
-    <div class="gauge-wrapper">
-
-      <div
-        id="gauge-bar"
-        class="gauge-bar"
-      ></div>
-
-    </div>
-
-    <p id="multiplier-text">
-      倍率: x1.0
     </p>
 
-    <button id="stop-btn">
-      STOP
-    </button>
-
-    <!-- ログ -->
-
-    <div id="battle-log">
-
-    </div>
-
-    <!-- 戻る -->
-
-    <button id="battle-back-btn">
+    <button class="back-btn">
 
       戻る
 
@@ -190,46 +131,27 @@
   </section>
 
   <!-- =====================
-       ガチャ画面
+       領土争奪戦
   ====================== -->
 
   <section
-    id="gacha-screen"
+    id="territory-screen"
     class="screen"
   >
 
     <h2>
-      ガチャ
+
+      領土争奪戦
+
     </h2>
 
-    <button id="gacha-btn">
-      ガチャを引く
-    </button>
+    <p>
 
-    <div
-      id="gacha-result"
-      class="gacha-result"
-    >
+      オンライン対戦（未実装）
 
-      <h3 id="gacha-monster-name">
+    </p>
 
-      </h3>
-
-      <p id="gacha-monster-rank">
-
-      </p>
-
-      <p id="gacha-monster-world">
-
-      </p>
-
-      <p id="gacha-monster-desc">
-
-      </p>
-
-    </div>
-
-    <button id="gacha-back-btn">
+    <button class="back-btn">
 
       戻る
 
@@ -238,7 +160,36 @@
   </section>
 
   <!-- =====================
-       ホーム画面
+       トレーニング
+  ====================== -->
+
+  <section
+    id="training-screen"
+    class="screen"
+  >
+
+    <h2>
+
+      トレーニングバトル
+
+    </h2>
+
+    <p>
+
+      オンライン対戦（未実装）
+
+    </p>
+
+    <button class="back-btn">
+
+      戻る
+
+    </button>
+
+  </section>
+
+  <!-- =====================
+       マイホーム
   ====================== -->
 
   <section
@@ -247,68 +198,24 @@
   >
 
     <h2>
+
       マイホーム
+
     </h2>
 
-    <p id="home-player-name">
+    <p>
+
+      パートナー選択 / コレクション
 
     </p>
 
-    <p id="home-player-world">
-
-    </p>
-
-    <p id="home-player-gold">
-
-    </p>
-
-    <h3>
-      パーティ
-    </h3>
-
-    <div id="party-container">
-
-    </div>
-
-    <button id="home-back-btn">
+    <button class="back-btn">
 
       戻る
 
     </button>
 
   </section>
-
-  <!-- =====================
-       図鑑
-  ====================== -->
-
-  <section
-    id="collection-screen"
-    class="screen"
-  >
-
-    <h2>
-      モンスター図鑑
-    </h2>
-
-    <div
-      id="collection-list"
-      class="collection-list"
-    >
-
-    </div>
-
-    <button id="collection-back-btn">
-
-      戻る
-
-    </button>
-
-  </section>
-
-  <!-- =====================
-       JS
-  ====================== -->
 
   <script
     type="module"
